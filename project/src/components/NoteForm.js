@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from "react"
 import NotesList from "./NotesList"
 
+
 const NoteForm =()=>{
 
     const [name,setName]=useState('')
@@ -20,13 +21,12 @@ const NoteForm =()=>{
     const searchHandler=(event)=>{
        setSearch(event.target.value)
     }
+   
+    const filterednotes = Array.isArray(notes)? notes.filter((note) =>
+        note.name.toLowerCase().includes(search.toLowerCase())):[]
+     
     
-        const filterednotes = notes.filter((note) =>
-            note.name.toLowerCase().includes(search.toLowerCase())
-          )
-    
-    const addNote=()=>{
-       
+    const addNote=()=>{     
         if(name.trim().length===0 || desc.trim().length===0)
         {
             alert('Fill The Input Feild Properly')
@@ -37,7 +37,6 @@ const NoteForm =()=>{
             desc:desc,
             id:Math.random()
         }
-        console.log(notes)
         setNotes([...notes,newnote])
         setName('')
         setDesc('')
@@ -45,7 +44,6 @@ const NoteForm =()=>{
 
     useEffect(()=>{
         let savedNotes=localStorage.getItem('notes')
-        console.log(savedNotes)
         if(savedNotes==='undefined')
         {
             savedNotes =[]
@@ -57,15 +55,13 @@ const NoteForm =()=>{
         }
     },[])
 
-    useEffect(()=>{
-    
+    useEffect(()=>{   
             localStorage.setItem('notes',JSON.stringify(notes))
     },[notes])
 
     const deleteNote=(id)=>{
         const filteredNotes=notes.filter(note=>note.id!==id)
-        setNotes(filteredNotes)
-    }
+        setNotes(filteredNotes)}
 
     return(
     <div>
@@ -77,8 +73,8 @@ const NoteForm =()=>{
                 onChange={searchHandler}></input>
             </div>
             <div>
-            <p >Total Entry:{notes.length}</p>
-            <p>Showing :{filterednotes.length}</p>
+            <p >Total Entry:{Array.isArray(notes)?notes.length:0}</p>
+            <p>Showing :{Array.isArray(filterednotes)?filterednotes.length:0}</p>
             </div>          
         </center>
         <div>
@@ -100,7 +96,7 @@ const NoteForm =()=>{
                 <button onClick={addNote}>Add Book</button>
             </div>
         </div> 
-        <NotesList notes={notes}  handDelete={deleteNote}></NotesList>
+        <NotesList notes={filterednotes}  handDelete={deleteNote}></NotesList>
     </div>
     )
 }
